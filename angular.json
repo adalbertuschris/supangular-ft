@@ -86,10 +86,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "veltripo_client:build:production"
+              "buildTarget": "veltripo_client:build:production"
             },
             "development": {
-              "browserTarget": "veltripo_client:build:development"
+              "buildTarget": "veltripo_client:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -97,7 +97,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "veltripo_client:build"
+            "buildTarget": "veltripo_client:build"
           }
         },
         "test": {
