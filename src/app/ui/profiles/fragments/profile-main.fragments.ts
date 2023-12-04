@@ -1,46 +1,37 @@
 import { Router } from '@angular/router';
-import { lastValueFrom, take } from 'rxjs';
 import { fragment } from '@web-fragments/ng-fragments';
-import { AuthService } from '@auth';
+import { AuthContext } from '@auth';
+import { Input } from '@core';
 import { getProfileApi$, updateProfileApi$ } from '@data/profiles';
 import { ProfileUpsert } from '../models/profile-upsert';
 import { ProfileContext } from './profile.context';
-import { Profile } from '../models/profile';
-
-// TEMP
-type Input<T> = { _input: T };
 
 export const loadProfile$ = fragment(async ({ _exec, _inject, store$, form$ }: ProfileContext) => {
-  const authService = _inject(AuthService);
-  const { loadProfile, loadProfileSuccess, loadProfileFailure } = _exec(store$);
-  loadProfile();
-  const userContext = await lastValueFrom(authService.userContext$.pipe(take(1)));
-  const { data } = await _exec(getProfileApi$, userContext.id);
+  const store = _exec(store$);
+  store.loadProfile();
+
+  const userId = _inject(AuthContext).getStore().state().session.user.id;
+  const { data } = await _exec(getProfileApi$, userId);
   if (data) {
-    loadProfileSuccess(data);
+    store.loadProfileSuccess(data);
     _exec(form$).updateForm(data);
   } else {
-    loadProfileFailure();
+    store.loadProfileFailure();
   }
 });
 
-export const updateProfileSuccess$ = fragment<Profile, Promise<void>>(
-  async ({ _input, _exec, _inject, store$ }: ProfileContext & Input<Profile>) => {
-    _exec(store$).updateProfileSuccess(_input);
-    _inject(AuthService).reloadUserContext();
-    _inject(Router).navigate(['/']);
-  }
-);
-
 export const updateProfile$ = fragment<{ id: string; model: ProfileUpsert }, Promise<void>>(
-  async ({ _input, _exec, store$ }: ProfileContext & Input<{ id: string; model: ProfileUpsert }>) => {
-    const { updateProfile, updateProfileFailure } = _exec(store$);
-    updateProfile();
+  async ({ _input, _exec, _inject, store$ }: ProfileContext & Input<{ id: string; model: ProfileUpsert }>) => {
+    const store = _exec(store$);
+    store.updateProfile();
     const { data } = await _exec(updateProfileApi$, _input);
+
     if (data) {
-      _exec(updateProfileSuccess$, data);
+      store.updateProfileSuccess(data);
+      _inject(AuthContext).reloadUserContext();
+      _inject(Router).navigate(['/']);
     } else {
-      updateProfileFailure();
+      store.updateProfileFailure();
     }
   }
 );

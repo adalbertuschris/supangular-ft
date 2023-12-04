@@ -10,11 +10,12 @@ import { ProfileResponse } from '@data/profiles';
 import { Profile } from '../models/profile';
 
 interface ProfileState {
+  [key: string]: unknown; // TEMP
   profile: Profile;
   isLoading: boolean;
 }
 
-const initialState = {
+const initialState: ProfileState = {
   profile: null,
   isLoading: false
 };
@@ -26,12 +27,17 @@ export const store$ = storeFragment(() => {
     storeBuilder(signalState(initialState)),
     updaters(({ update }) => ({
       loadProfile: (): void => update((state) => ({ ...state, isLoading: true })),
+
       loadProfileSuccess: (profile: ProfileResponse): void =>
         update((state) => ({ ...state, profile, isLoading: false })),
+
       loadProfileFailure: (): void => update((state) => ({ ...state, profile: null, isLoading: false })),
+
       updateProfile: (): void => update((state) => ({ ...state, isLoading: true })),
+
       updateProfileSuccess: (profile: ProfileResponse): void =>
         update((state) => ({ ...state, profile, isLoading: false })),
+
       updateProfileFailure: (): void => update((state) => ({ ...state, isLoading: false }))
     }))
   );
