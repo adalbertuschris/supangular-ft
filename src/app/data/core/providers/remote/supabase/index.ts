@@ -1,3 +1,6 @@
+// fragments
+export * from './fragments/supabase-fragment';
+
 // models
 export * from './models/supabase-converter-options';
 export * from './models/supabase-error';

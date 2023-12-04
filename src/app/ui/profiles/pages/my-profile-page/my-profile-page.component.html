@@ -1,10 +1,10 @@
-<div class="card">
+<div *ngIf="!isLoading?.()" class="card">
     <div class="card-header">
         <h1>{{ 'PROFILE.TITLE' | translate }}</h1>
         <p class="description">{{ 'PROFILE.DESCRIPTION' | translate }}</p>
     </div>
     <div class="card-body">
-        <form *ngIf="(profile$ | async) as profile" [formGroup]="profileForm" (ngSubmit)="updateProfile(profile.id)"
+        <form *ngIf="profile?.() as profile" [formGroup]="profileForm" (ngSubmit)="updateProfile(profile.id)"
             class="form">
 
             <div class="form-group">
@@ -20,9 +20,8 @@
             </div>
 
             <div class="form-actions">
-                <button vt-button type="submit" class="form-button"
-                    [disabled]="profileForm.invalid || (isLoading$ | async)">
-                    {{ ((isLoading$ | async) ? 'GENERAL.SAVING' : 'GENERAL.UPDATE') | translate }}
+                <button vt-button type="submit" class="form-button" [disabled]="profileForm.invalid || (isLoading?.())">
+                    {{ ((isLoading?.()) ? 'GENERAL.SAVING' : 'GENERAL.UPDATE') | translate }}
                 </button>
             </div>
         </form>

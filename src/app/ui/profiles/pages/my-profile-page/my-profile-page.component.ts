@@ -1,43 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Component, Signal, inject } from '@angular/core';
 import { Profile } from '../../models/profile';
-import { ProfileService } from '../../services/profile.service';
+import { ProfileContext } from '../../fragments/profile.context';
 import { ProfileUpsert } from '../../models/profile-upsert';
 
 @Component({
   selector: 'vt-my-profile-page',
   templateUrl: './my-profile-page.component.html',
-  styleUrls: ['./my-profile-page.component.scss']
+  styleUrls: ['./my-profile-page.component.scss'],
+  providers: [ProfileContext]
 })
-export class MyProfilePageComponent implements OnInit {
-  isLoading$: Observable<boolean> = this.profileService.isLoading$;
-  profile$: Observable<Profile> = this.profileService.profile$;
+export class MyProfilePageComponent {
+  context = inject(ProfileContext);
+  formManager = this.context.getForm();
+  profileForm = this.formManager.form;
+  store = this.context.getStore();
+  isLoading: Signal<boolean> = this.store.select((state) => state.isLoading);
+  profile: Signal<Profile> = this.store.select((state) => state.profile);
 
-  profileForm = this.formBuilder.group({
-    firstName: ['', Validators.required],
-    lastName: ''
-  });
-
-  constructor(
-    private readonly profileService: ProfileService,
-    private readonly formBuilder: FormBuilder,
-    private readonly route: ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
-    this.route.data.subscribe(({ profile }) => {
-      const { firstName, lastName } = profile;
-      this.profileForm.patchValue({
-        firstName,
-        lastName
-      });
-    });
+  constructor() {
+    this.context.loadProfile();
   }
 
   updateProfile(profileId: string): void {
     const model: ProfileUpsert = this.profileForm.value as ProfileUpsert;
-    this.profileService.updateProfile(profileId, model);
+    this.context.updateProfile(profileId, model);
   }
 }
