@@ -1,10 +1,13 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
-import { map } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { AuthContext } from '../fragments/auth.context';
 
-export const loginGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const loginGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
+  const authContext = inject(AuthContext);
+  const isAuth = authContext.getStore().isAuth;
 
-  return inject(AuthService).isAuth$.pipe(map((isAuth) => (!isAuth ? true : router.createUrlTree(['/']))));
+  await authContext.checkAuth();
+
+  return !isAuth() ? true : router.createUrlTree(['/']);
 };

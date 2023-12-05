@@ -1,10 +1,10 @@
 import {
   FragmentResultType,
   build,
+  props,
   signalState,
   storeBuilder,
-  storeFragment,
-  updaters
+  storeFragment
 } from '@web-fragments/ng-fragments';
 import { ProfileResponse } from '@data/profiles';
 import { Profile } from '../models/profile';
@@ -23,24 +23,39 @@ const initialState: ProfileState = {
 export type ProfileStore = FragmentResultType<typeof store$>;
 
 export const store$ = storeFragment(() => {
-  const store = build(
-    storeBuilder(signalState(initialState)),
-    updaters(({ update }) => ({
-      loadProfile: (): void => update((state) => ({ ...state, isLoading: true })),
+  const state = signalState(initialState);
+  const { update, select } = state;
 
-      loadProfileSuccess: (profile: ProfileResponse): void =>
-        update((state) => ({ ...state, profile, isLoading: false })),
+  // Getters
+  const isLoading = select((state) => state.isLoading);
+  const profile = select((state) => state.profile);
 
-      loadProfileFailure: (): void => update((state) => ({ ...state, profile: null, isLoading: false })),
+  // Updaters
+  const loadProfile = (): void => update((state) => ({ ...state, isLoading: true }));
 
-      updateProfile: (): void => update((state) => ({ ...state, isLoading: true })),
+  const loadProfileSuccess = (profile: ProfileResponse): void =>
+    update((state) => ({ ...state, profile, isLoading: false }));
 
-      updateProfileSuccess: (profile: ProfileResponse): void =>
-        update((state) => ({ ...state, profile, isLoading: false })),
+  const loadProfileFailure = (): void => update((state) => ({ ...state, profile: null, isLoading: false }));
 
-      updateProfileFailure: (): void => update((state) => ({ ...state, isLoading: false }))
-    }))
+  const updateProfile = (): void => update((state) => ({ ...state, isLoading: true }));
+
+  const updateProfileSuccess = (profile: ProfileResponse): void =>
+    update((state) => ({ ...state, profile, isLoading: false }));
+
+  const updateProfileFailure = (): void => update((state) => ({ ...state, isLoading: false }));
+
+  return build(
+    storeBuilder(state),
+    props({
+      isLoading,
+      profile,
+      loadProfile,
+      loadProfileSuccess,
+      loadProfileFailure,
+      updateProfile,
+      updateProfileSuccess,
+      updateProfileFailure
+    })
   );
-
-  return store;
 });

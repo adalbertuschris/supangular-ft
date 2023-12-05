@@ -1,5 +1,4 @@
-import { Component, Signal, inject } from '@angular/core';
-import { Profile } from '../../models/profile';
+import { Component, inject } from '@angular/core';
 import { ProfileContext } from '../../fragments/profile.context';
 import { ProfileUpsert } from '../../models/profile-upsert';
 
@@ -14,8 +13,8 @@ export class MyProfilePageComponent {
   formManager = this.context.getForm();
   profileForm = this.formManager.form;
   store = this.context.getStore();
-  isLoading: Signal<boolean> = this.store.select((state) => state.isLoading);
-  profile: Signal<Profile> = this.store.select((state) => state.profile);
+  isLoading = this.store.isLoading;
+  profile = this.store.profile;
 
   constructor() {
     this.context.loadProfile();

@@ -1,4 +1,4 @@
-export * from './auth-data.service';
+export * from './auth-data.fragments';
 
 export * from './models/auth-session-response';
 export * from './models/auth-user-response';

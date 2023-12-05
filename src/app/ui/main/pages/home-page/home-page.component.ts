@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@auth';
+import { AuthContext } from '@auth';
 
 @Component({
   selector: 'vt-home-page',
@@ -8,13 +8,11 @@ import { AuthService } from '@auth';
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent {
-  userContext$ = this.authService.userContext$;
-  isAuth$ = this.authService.isAuth$;
-
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router
-  ) {}
+  router = inject(Router);
+  authContext = inject(AuthContext);
+  authStore = this.authContext.getStore();
+  userContext = this.authStore.userContext;
+  isAuth = this.authStore.isAuth;
 
   goToMyProfile(): void {
     this.router.navigate(['/my-profile']);
@@ -25,6 +23,6 @@ export class HomePageComponent {
   }
 
   signOut(): void {
-    this.authService.signOut();
+    this.authContext.signOut();
   }
 }

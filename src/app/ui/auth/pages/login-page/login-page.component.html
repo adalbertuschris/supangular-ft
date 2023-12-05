@@ -14,9 +14,8 @@
             </div>
 
             <div class="form-actions">
-                <button vt-button type="submit" class="form-button"
-                    [disabled]="signInForm.invalid || (isLoading$ | async)">
-                    {{ ((isLoading$ | async) ? 'GENERAL.SENDING' : 'LOGIN.SEND_MAGIC_LINK') | translate }}
+                <button vt-button type="submit" class="form-button" [disabled]="signInForm.invalid || isLoading?.()">
+                    {{ (isLoading?.() ? 'GENERAL.SENDING' : 'LOGIN.SEND_MAGIC_LINK') | translate }}
                 </button>
             </div>
         </form>
